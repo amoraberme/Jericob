@@ -444,4 +444,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // 9. Mobile Navigation Logic
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    if (mobileMenuBtn && mobileNavOverlay) {
+        // Toggle menu Open/Close
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            mobileNavOverlay.classList.toggle('active');
+            // Toggle body scroll locking
+            document.body.style.overflow = mobileNavOverlay.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Close menu when a link is clicked
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileNavOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Use the connect button inside the mobile nav
+        const mobileContactTrigger = mobileNavOverlay.querySelector('.mobile-contact-trigger');
+        if (mobileContactTrigger && typeof openModal === 'function') {
+            mobileContactTrigger.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileNavOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                openModal();
+            });
+        }
+    }
+
 });
