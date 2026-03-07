@@ -12,14 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
             cursorDot.style.left = `${posX}px`;
             cursorDot.style.top = `${posY}px`;
 
-            // Outline follows with slight delay using GSAP
-            gsap.to(cursorOutline, {
-                left: posX,
-                top: posY,
-                duration: 0.5,
-                ease: "power2.out",
-                overwrite: "auto"
-            });
+            // Outline follows with slight delay using animate
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
         });
 
         // Add hover effects for interactive elements
@@ -148,175 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     gsap.ticker.lagSmoothing(0);
 
-    // 5. Handle Anchor Links specifically for Lenis to remove any click delay
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            const target = document.querySelector(targetId);
-            if (target) {
-                lenis.scrollTo(target, { offset: 0, duration: 1.2 });
-            }
-        });
-    });
-
-    // 6. Particle Text Canvas Logic (Vanilla JS implementation of Framer ParticleText)
-    const initParticleText = () => {
-        const canvas = document.getElementById('particle-text-canvas');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        if (!ctx) return;
-
-        let particles = [];
-        let mouseX = -1000;
-        let mouseY = -1000;
-        let animationFrameId;
-
-        // Configuration
-        const config = {
-            text: "JB.",
-            particleColor: getComputedStyle(document.body).getPropertyValue('--clr-text-main').trim() || "#111111",
-            particleSize: 2,
-            particleDensity: 4, // 1 is dense, 5 is sparse.
-            mouseRadius: 100,
-            returnSpeed: 0.05,
-            fontFamily: "Outfit, sans-serif",
-            fontWeight: "700"
-        };
-
-        const setupCanvas = () => {
-            const dpr = window.devicePixelRatio || 1;
-            const parent = canvas.parentElement;
-            const rect = parent.getBoundingClientRect();
-
-            // Fixed aspect ratio container
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-
-            createParticles(rect.width, rect.height, dpr);
-        };
-
-        const createParticles = (width, height, dpr) => {
-            particles = [];
-
-            // Draw text to read its pixels
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = config.particleColor;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-
-            // Scale font size based on container width
-            const fontSize = Math.min(width * 0.4, 250);
-            ctx.font = `${config.fontWeight} ${fontSize}px ${config.fontFamily}`;
-
-            ctx.fillText(config.text, width / 2, height / 2);
-
-            // Extract pixel data
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            const gap = Math.max(2, config.particleDensity); // Density step
-
-            // Create particle map
-            for (let y = 0; y < canvas.height; y += gap) {
-                for (let x = 0; x < canvas.width; x += gap) {
-                    const index = (y * canvas.width + x) * 4;
-                    const alpha = pixels[index + 3];
-
-                    if (alpha > 128) {
-                        const px = x / dpr;
-                        const py = y / dpr;
-                        particles.push({
-                            x: px + (Math.random() * 20 - 10), // Initial scatter
-                            y: py + (Math.random() * 20 - 10),
-                            baseX: px,
-                            baseY: py,
-                            vx: 0,
-                            vy: 0
-                        });
-                    }
-                }
-            }
-        };
-
-        const animateParticles = () => {
-            const rect = canvas.getBoundingClientRect();
-            ctx.clearRect(0, 0, rect.width, rect.height);
-
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                const dx = mouseX - p.x;
-                const dy = mouseY - p.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                // Mouse Repulsion
-                if (distance < config.mouseRadius) {
-                    const force = (config.mouseRadius - distance) / config.mouseRadius;
-                    const angle = Math.atan2(dy, dx);
-                    // Push away
-                    p.vx -= Math.cos(angle) * force * 2;
-                    p.vy -= Math.sin(angle) * force * 2;
-                }
-
-                // Spring back to base
-                p.vx += (p.baseX - p.x) * config.returnSpeed;
-                p.vy += (p.baseY - p.y) * config.returnSpeed;
-
-                // Friction / Damping
-                p.vx *= 0.90;
-                p.vy *= 0.90;
-
-                // Update position
-                p.x += p.vx;
-                p.y += p.vy;
-
-                // Draw Particle
-                ctx.fillStyle = config.particleColor;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, config.particleSize, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            animationFrameId = requestAnimationFrame(animateParticles);
-        };
-
-        // Event Listeners
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left;
-            mouseY = e.clientY - rect.top;
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            mouseX = -1000;
-            mouseY = -1000;
-        });
-
-        // Handle resizing
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                cancelAnimationFrame(animationFrameId);
-                setupCanvas();
-                animateParticles();
-            }, 250);
-        });
-
-        // Init
-        document.fonts.ready.then(() => {
-            setupCanvas();
-            animateParticles();
-        });
-    };
-
-    initParticleText();
-
     // Initial load animations (Hero)
     const tl = gsap.timeline();
 
@@ -348,9 +176,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Scroll Animations for fade-up elements
     const fadeUpElements = document.querySelectorAll(".fade-up");
     fadeUpElements.forEach(el => {
-        // Skip elements in the hero section as they are handled by the initial load timeline
-        if (el.closest('.hero')) return;
-
         gsap.fromTo(el,
             { y: 50, opacity: 0 },
             {
@@ -652,6 +477,107 @@ document.addEventListener("DOMContentLoaded", () => {
                 openModal();
             });
         }
+    }
+
+    // 10. Particle Text Animation
+    const canvas = document.getElementById("particle-text-canvas");
+    if (canvas) {
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 80 };
+
+        let width, height;
+
+        function initParticles() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+            particles = [];
+
+            // Draw text
+            ctx.fillStyle = "white";
+            ctx.font = "900 " + (width * 0.45) + "px Outfit, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("JB.", width / 2, height / 2);
+
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            ctx.clearRect(0, 0, width, height);
+
+            const gap = 5;
+            for (let y = 0; y < height; y += gap) {
+                for (let x = 0; x < width; x += gap) {
+                    const index = (y * width + x) * 4;
+                    const alpha = data[index + 3];
+                    if (alpha > 128) {
+                        particles.push({
+                            x: Math.random() * width,
+                            y: Math.random() * height,
+                            originX: x,
+                            originY: y,
+                            color: "#111111", // Using main text color 
+                            size: 1.5,
+                            vx: 0,
+                            vy: 0,
+                            ease: 0.08,
+                            friction: 0.90
+                        });
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+
+                let dx = mouse.x - p.x;
+                let dy = mouse.y - p.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < mouse.radius && mouse.x !== null) {
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let force = (mouse.radius - distance) / mouse.radius;
+                    let directionX = forceDirectionX * force * 5;
+                    let directionY = forceDirectionY * force * 5;
+
+                    p.x -= directionX;
+                    p.y -= directionY;
+                } else {
+                    p.x += (p.originX - p.x) * p.ease;
+                    p.y += (p.originY - p.y) * p.ease;
+                }
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        window.addEventListener("resize", () => {
+            initParticles();
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener("mouseleave", () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
     }
 
 });
