@@ -397,6 +397,8 @@ h6 {
     display: flex;
     justify-content: center;
     align-items: center;
+    transform: scale(1.15);
+    /* Slightly increased placeholder footprint */
 }
 
 #particle-text-canvas {
