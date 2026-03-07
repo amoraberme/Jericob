@@ -484,45 +484,57 @@ document.addEventListener("DOMContentLoaded", () => {
     if (canvas) {
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
         let particles = [];
-        let mouse = { x: null, y: null, radius: 150 }; // increased radius for larger expand effect
+        let mouse = { x: -1000, y: -1000 };
 
         let width, height;
 
         function initParticles() {
-            width = canvas.parentElement.clientWidth;
-            height = canvas.parentElement.clientHeight;
-            canvas.width = width;
-            canvas.height = height;
+            const dpr = window.devicePixelRatio || 1;
+            const parent = canvas.parentElement;
+
+            width = parent.clientWidth;
+            height = parent.clientHeight;
+
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+
             particles = [];
 
-            // Draw text
-            ctx.fillStyle = "white";
-            ctx.font = "900 " + (width * 0.65) + "px Outfit, sans-serif"; // Increased by ~50%
+            // Draw text to get particle positions
+            ctx.fillStyle = "#000000";
+            const fontSize = Math.floor(width * 0.65);
+            ctx.font = `900 ${fontSize}px Inter, sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText("JB.", width / 2, height / 2);
 
-            const imageData = ctx.getImageData(0, 0, width, height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
             ctx.clearRect(0, 0, width, height);
 
-            const gap = 5;
-            for (let y = 0; y < height; y += gap) {
-                for (let x = 0; x < width; x += gap) {
-                    const index = (y * width + x) * 4;
+            // Framer exact properties
+            const particleDensity = 3;
+            const gap = Math.max(2, particleDensity);
+
+            for (let y = 0; y < canvas.height; y += gap) {
+                for (let x = 0; x < canvas.width; x += gap) {
+                    const index = (y * canvas.width + x) * 4;
                     const alpha = data[index + 3];
+
                     if (alpha > 128) {
+                        const px = x / dpr;
+                        const py = y / dpr;
+
                         particles.push({
-                            x: Math.random() * width,
-                            y: Math.random() * height,
-                            originX: x,
-                            originY: y,
-                            color: "#000000", // Darkness 100%
-                            size: 1.5,
+                            x: px,
+                            y: py,
+                            baseX: px,
+                            baseY: py,
+                            color: "#000000",
+                            size: 2,
                             vx: 0,
-                            vy: 0,
-                            ease: 0.03, // Reduced gravity
-                            friction: 0.85 // Smoothing
+                            vy: 0
                         });
                     }
                 }
@@ -532,6 +544,10 @@ document.addEventListener("DOMContentLoaded", () => {
         function animateParticles() {
             ctx.clearRect(0, 0, width, height);
 
+            // Framer exact animation parameters
+            const mouseRadius = 100;
+            const returnSpeed = 0.05;
+
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
 
@@ -539,29 +555,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 let dy = mouse.y - p.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < mouse.radius && mouse.x !== null) {
-                    let forceDirectionX = dx / distance;
-                    let forceDirectionY = dy / distance;
-                    let force = (mouse.radius - distance) / mouse.radius;
-                    // increased force multiplier
-                    let directionX = forceDirectionX * force * 20;
-                    let directionY = forceDirectionY * force * 20;
+                // Push particles away from mouse
+                if (distance < mouseRadius) {
+                    const force = (mouseRadius - distance) / mouseRadius;
+                    const angle = Math.atan2(dy, dx);
 
-                    p.vx -= directionX;
-                    p.vy -= directionY;
+                    p.vx -= Math.cos(angle) * force * 2;
+                    p.vy -= Math.sin(angle) * force * 2;
                 }
 
-                // Return to origin (gravity)
-                p.vx += (p.originX - p.x) * p.ease;
-                p.vy += (p.originY - p.y) * p.ease;
+                // Return to base position
+                p.vx += (p.baseX - p.x) * returnSpeed;
+                p.vy += (p.baseY - p.y) * returnSpeed;
 
-                // Apply friction
-                p.vx *= p.friction;
-                p.vy *= p.friction;
+                // Apply velocity with damping
+                p.vx *= 0.95;
+                p.vy *= 0.95;
 
                 p.x += p.vx;
                 p.y += p.vy;
 
+                // Draw particle
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -584,8 +598,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         canvas.addEventListener("mouseleave", () => {
-            mouse.x = null;
-            mouse.y = null;
+            mouse.x = -1000;
+            mouse.y = -1000;
         });
     }
 
