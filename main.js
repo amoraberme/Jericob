@@ -513,9 +513,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = imageData.data;
             ctx.clearRect(0, 0, width, height);
 
-            // Framer exact properties
-            const particleDensity = 3;
-            const gap = Math.max(2, particleDensity);
+            // Performance optimizations: Adapt density and size to device DPR and screen width
+            // This prevents Retina screens from attempting to render 4x as many particles 
+            const baseDensity = width < 768 ? 5 : 3;
+            const particleDensity = baseDensity * dpr; // Scale gap by pixel ratio
+            const gap = Math.max(2, Math.floor(particleDensity));
+
+            const particleRadius = width < 768 ? 1.5 : (dpr > 1 ? 2.5 : 2); // Slightly larger particles to compensate for broader gap
 
             for (let y = 0; y < canvas.height; y += gap) {
                 for (let x = 0; x < canvas.width; x += gap) {
@@ -532,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             baseX: px,
                             baseY: py,
                             color: "#000000",
-                            size: 2,
+                            size: particleRadius,
                             vx: 0,
                             vy: 0
                         });
