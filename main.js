@@ -492,8 +492,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const dpr = window.devicePixelRatio || 1;
             const parent = canvas.parentElement;
 
-            width = parent.clientWidth;
-            height = parent.clientHeight;
+            // Expand by 1.5x so particles don't clip at strict parent edges
+            width = parent.clientWidth * 1.5;
+            height = parent.clientHeight * 1.5;
+
+            // Center canvas using absolute positioning and negative margins
+            canvas.style.position = 'absolute';
+            canvas.style.left = `-${(width - parent.clientWidth) / 2}px`;
+            canvas.style.top = `-${(height - parent.clientHeight) / 2}px`;
 
             canvas.width = width * dpr;
             canvas.height = height * dpr;
@@ -503,7 +509,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Draw text to get particle positions
             ctx.fillStyle = "#000000";
-            const fontSize = Math.floor(width * 0.65);
+            // Font size based on original parent width to stay same size visually
+            const fontSize = Math.floor(parent.clientWidth * 0.65);
             ctx.font = `900 ${fontSize}px Inter, sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
