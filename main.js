@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // Outline follows with slight delay using animate
             cursorOutline.animate({
                 left: `${posX}px`,
-                top: `${posY}px`
+                top: `${posY}px`,
+                transform: `translate(-50%, -50%)`
             }, { duration: 500, fill: "forwards" });
         });
 

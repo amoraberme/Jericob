@@ -188,14 +188,14 @@ h6 {
 }
 
 .btn-outline {
-    background-color: var(--clr-accent);
-    color: var(--clr-bg);
+    background-color: transparent;
+    color: var(--clr-accent);
     border: 1px solid var(--clr-accent);
 }
 
 .btn-outline:hover {
-    background-color: transparent;
-    color: var(--clr-accent);
+    background-color: var(--clr-accent);
+    color: var(--clr-bg);
 }
 
 .arrow {
