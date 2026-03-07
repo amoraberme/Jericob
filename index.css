@@ -109,27 +109,28 @@ img {
     border-radius: 50%;
     z-index: 10001;
     pointer-events: none;
-    mix-blend-mode: difference;
 }
 
 .cursor-dot {
     width: 6px;
     height: 6px;
-    background-color: #fff;
+    background-color: var(--clr-text-main);
 }
 
 .cursor-outline {
     width: 40px;
     height: 40px;
-    border: 2px solid #fff;
-    transition: width 0.3s var(--ease-out-expo), height 0.3s var(--ease-out-expo), background-color 0.3s var(--ease-out-expo), border-color 0.3s var(--ease-out-expo);
+    border: 2px solid var(--clr-text-main);
+    opacity: 0.5;
+    transition: width 0.3s var(--ease-out-expo), height 0.3s var(--ease-out-expo), background-color 0.3s var(--ease-out-expo), border-color 0.3s var(--ease-out-expo), opacity 0.3s;
 }
 
 body:hover .cursor-outline.hovered {
     width: 60px;
     height: 60px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.2);
+    opacity: 1;
 }
 
 
@@ -398,22 +399,29 @@ h6 {
 .headline {
     font-size: clamp(3rem, 7vw, 6.5rem);
     margin-bottom: 2rem;
+    text-align: center;
+    text-wrap: balance;
+    /* Perfectly balances wrapping text */
+    line-height: 1.1;
 }
 
 .dynamic-verb-wrapper {
-    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
     vertical-align: bottom;
     position: relative;
     height: 1.1em;
-    margin-left: 0.1rem;
+    margin-left: 0.3rem;
+    /* Small space after 'Let's' */
     width: 5.5em;
-    /* Set a fixed width or enough space for the longest word */
+    /* Fixed width to prevent jumping, but verb is centered inside */
 }
 
 .dynamic-verb {
     position: absolute;
-    left: 0;
     bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     font-style: normal;
     font-family: var(--font-body);
     /* Using Inter */

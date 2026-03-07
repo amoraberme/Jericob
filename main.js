@@ -12,11 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
             cursorDot.style.left = `${posX}px`;
             cursorDot.style.top = `${posY}px`;
 
-            // Outline follows with slight delay using animate
-            cursorOutline.animate({
-                left: `${posX}px`,
-                top: `${posY}px`
-            }, { duration: 500, fill: "forwards" });
+            // Outline follows with slight delay using GSAP
+            gsap.to(cursorOutline, {
+                left: posX,
+                top: posY,
+                duration: 0.5,
+                ease: "power2.out",
+                overwrite: "auto"
+            });
         });
 
         // Add hover effects for interactive elements
@@ -145,6 +148,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     gsap.ticker.lagSmoothing(0);
 
+    // 5. Handle Anchor Links specifically for Lenis to remove any click delay
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            const target = document.querySelector(targetId);
+            if (target) {
+                lenis.scrollTo(target, { offset: 0, duration: 1.2 });
+            }
+        });
+    });
+
     // Initial load animations (Hero)
     const tl = gsap.timeline();
 
@@ -176,6 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Scroll Animations for fade-up elements
     const fadeUpElements = document.querySelectorAll(".fade-up");
     fadeUpElements.forEach(el => {
+        // Skip elements in the hero section as they are handled by the initial load timeline
+        if (el.closest('.hero')) return;
+
         gsap.fromTo(el,
             { y: 50, opacity: 0 },
             {
