@@ -484,7 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (canvas) {
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
         let particles = [];
-        let mouse = { x: null, y: null, radius: 80 };
+        let mouse = { x: null, y: null, radius: 150 }; // increased radius for larger expand effect
 
         let width, height;
 
@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Draw text
             ctx.fillStyle = "white";
-            ctx.font = "900 " + (width * 0.45) + "px Outfit, sans-serif";
+            ctx.font = "900 " + (width * 0.65) + "px Outfit, sans-serif"; // Increased by ~50%
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText("JB.", width / 2, height / 2);
@@ -517,12 +517,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             y: Math.random() * height,
                             originX: x,
                             originY: y,
-                            color: "#111111", // Using main text color 
+                            color: "#000000", // Darkness 100%
                             size: 1.5,
                             vx: 0,
                             vy: 0,
-                            ease: 0.08,
-                            friction: 0.90
+                            ease: 0.03, // Reduced gravity
+                            friction: 0.85 // Smoothing
                         });
                     }
                 }
@@ -543,15 +543,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     let forceDirectionX = dx / distance;
                     let forceDirectionY = dy / distance;
                     let force = (mouse.radius - distance) / mouse.radius;
-                    let directionX = forceDirectionX * force * 5;
-                    let directionY = forceDirectionY * force * 5;
+                    // increased force multiplier
+                    let directionX = forceDirectionX * force * 20;
+                    let directionY = forceDirectionY * force * 20;
 
-                    p.x -= directionX;
-                    p.y -= directionY;
-                } else {
-                    p.x += (p.originX - p.x) * p.ease;
-                    p.y += (p.originY - p.y) * p.ease;
+                    p.vx -= directionX;
+                    p.vy -= directionY;
                 }
+
+                // Return to origin (gravity)
+                p.vx += (p.originX - p.x) * p.ease;
+                p.vy += (p.originY - p.y) * p.ease;
+
+                // Apply friction
+                p.vx *= p.friction;
+                p.vy *= p.friction;
+
+                p.x += p.vx;
+                p.y += p.vy;
 
                 ctx.fillStyle = p.color;
                 ctx.beginPath();

@@ -390,8 +390,7 @@ h6 {
 .hero-visual {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background-color: var(--clr-bg-alt);
-    border-radius: 12px;
+    background-color: transparent;
     position: relative;
     overflow: hidden;
     display: flex;
