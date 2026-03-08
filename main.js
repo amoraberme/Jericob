@@ -598,8 +598,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         canvas.addEventListener("mousemove", (e) => {
             const rect = canvas.getBoundingClientRect();
-            mouse.x = e.clientX - rect.left;
-            mouse.y = e.clientY - rect.top;
+            const scaleX = width / rect.width;
+            const scaleY = height / rect.height;
+            mouse.x = (e.clientX - rect.left) * scaleX;
+            mouse.y = (e.clientY - rect.top) * scaleY;
         });
 
         canvas.addEventListener("mouseleave", () => {
