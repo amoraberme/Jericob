@@ -521,10 +521,12 @@ section {
 
 /* Expertise / Visual Stack Feed */
 .expertise {
-    background-color: var(--clr-bg-alt);
-    border-top: 1px solid var(--clr-border);
-    border-bottom: 1px solid var(--clr-border);
+    background-color: transparent;
+    border-top: none;
+    border-bottom: none;
     overflow: hidden;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
 }
 
 .visual-stack-container {
@@ -1740,4 +1742,188 @@ section {
     .stack-card {
         cursor: pointer;
     }
+
+    /* Feature3 responsive */
+    .feature3-layout {
+        flex-direction: column;
+    }
+
+    .feature3-copy {
+        padding-left: 0;
+    }
 }
+
+/* ==========================================================================
+   Anthropic Certified Header
+   ========================================================================== */
+
+.anthropic-certified-header {
+    margin-bottom: 2rem;
+}
+
+.anthropic-certified-title {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+}
+
+.anthropic-certified-sub {
+    font-size: 1.05rem;
+    color: var(--clr-text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.65;
+    font-weight: 400;
+}
+
+/* ==========================================================================
+   Feature3 — CareerSync Section (Refactored)
+   ========================================================================== */
+
+.feature3-section {
+    background-color: transparent;
+    border-top: none;
+    border-bottom: none;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.feature3-layout {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 3.5rem;
+    align-items: center;
+}
+
+@media (min-width: 1024px) {
+    .feature3-layout {
+        flex-direction: row;
+        gap: 5rem;
+    }
+}
+
+/* Left column: image + tech stack */
+.feature3-visual-col {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.feature3-visual {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--clr-border);
+    aspect-ratio: 16 / 9;
+}
+
+.feature3-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s var(--ease-out-expo);
+}
+
+.feature3-visual:hover .feature3-img {
+    transform: scale(1.03);
+}
+
+/* Tech stack logo row */
+.feature3-stack {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0 0.25rem;
+}
+
+.stack-logo {
+    height: 2rem;        /* ~h-8 equivalent */
+    width: auto;
+    object-fit: contain;
+    opacity: 0.55;
+    filter: grayscale(100%);
+    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.stack-logo:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+    transform: translateY(-2px);
+}
+
+/* Right column */
+.feature3-copy {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-left: 0;
+}
+
+@media (min-width: 1024px) {
+    .feature3-copy {
+        padding-left: 1rem;
+    }
+}
+
+/* Badge — now more prominent */
+.feature3-badge {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    border: 1.5px solid var(--clr-accent);
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--clr-accent);
+    width: fit-content;
+    font-family: var(--font-heading);
+}
+
+.feature3-headline {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--clr-text-main);
+}
+
+.feature3-desc {
+    font-size: 1.05rem;
+    color: var(--clr-text-muted);
+    line-height: 1.7;
+    max-width: 480px;
+}
+
+/* Compact CTA button */
+.feature3-cta-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 100px;
+    border: 1px solid var(--clr-accent);
+    color: var(--clr-accent);
+    background: transparent;
+    transition: all 0.35s var(--ease-out-expo);
+    width: fit-content;
+    margin-top: 0.5rem;
+}
+
+.feature3-cta-sm:hover {
+    background-color: var(--clr-accent);
+    color: var(--clr-bg);
+}
+
