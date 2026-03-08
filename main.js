@@ -30,6 +30,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursorOutline.classList.remove("hovered");
             });
         });
+
+        // Marquee Tooltip Logic
+        const tooltipEl = document.createElement('div');
+        tooltipEl.className = 'marquee-tooltip';
+        document.body.appendChild(tooltipEl);
+
+        const marqueeItems = document.querySelectorAll('.marquee-item.anthropic-item');
+        marqueeItems.forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                const text = item.getAttribute('data-tooltip');
+                if (text) {
+                    tooltipEl.textContent = text;
+                    tooltipEl.classList.add('visible');
+                    // Add standard hover expansion to cursor outline too
+                    cursorOutline.classList.add("hovered");
+                }
+            });
+            
+            item.addEventListener('mousemove', (e) => {
+                // Follow cursor exactly. The CSS handles offset and scale.
+                tooltipEl.style.left = `${e.clientX}px`;
+                tooltipEl.style.top = `${e.clientY}px`;
+            });
+
+            item.addEventListener('mouseleave', () => {
+                tooltipEl.classList.remove('visible');
+                cursorOutline.classList.remove("hovered");
+            });
+        });
     }
 
     // 2. Navbar Scroll Effect & Scrollspy

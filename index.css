@@ -792,17 +792,7 @@ section {
 
 /* Credentials Section */
 .credentials {
-    background-color: var(--clr-accent);
-    color: var(--clr-bg);
-}
-
-.credentials .section-title,
-.credentials .section-subtitle {
-    color: var(--clr-bg);
-}
-
-.credentials .section-subtitle {
-    opacity: 0.8;
+    background-color: var(--clr-bg);
 }
 
 /* Continuous Scroll Marquee */
@@ -825,12 +815,12 @@ section {
 
 .marquee-fade-left {
     left: 0;
-    background: linear-gradient(to right, var(--clr-accent) 0%, transparent 100%);
+    background: linear-gradient(to right, var(--clr-bg) 0%, transparent 100%);
 }
 
 .marquee-fade-right {
     right: 0;
-    background: linear-gradient(to left, var(--clr-accent) 0%, transparent 100%);
+    background: linear-gradient(to left, var(--clr-bg) 0%, transparent 100%);
 }
 
 .marquee-track {
@@ -878,6 +868,32 @@ section {
 @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
+}
+
+/* Cursor Following Tooltip for Marquee */
+.marquee-tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--clr-text-main);
+    color: var(--clr-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    pointer-events: none;
+    z-index: 10002; /* Above cursor */
+    opacity: 0;
+    transform: translate(20px, 20px) scale(0.9);
+    transition: opacity 0.2s var(--ease-out-expo), transform 0.2s var(--ease-out-expo);
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+}
+
+.marquee-tooltip.visible {
+    opacity: 1;
+    transform: translate(20px, 20px) scale(1);
 }
 
 .credentials-grid {
